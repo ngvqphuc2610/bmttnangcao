@@ -85,7 +85,7 @@ class QuanLySinhVien:
     def showSinhVien(self, listSV):
         print("{:<18} {:<8} {:<8}{:<8} {:<8} "
               .format("ID" , "Name", "Sex", "Major", "DiemTb", "HocLuc"))
-        if(listSV._len_()>0):
+        if len(listSV) > 0:
             for sv in listSV:      
                 print("{:<18} {:<8} {:<8}{:<8} {:<8} "
                     .format(sv._id, sv._name, sv._sex,sv._major, sv._diemTB, sv._hocLuc))
