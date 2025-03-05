@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": [
+        "./bmttnangcao/lab-02"
+    ]
+}
