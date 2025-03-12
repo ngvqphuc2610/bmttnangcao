@@ -53,7 +53,7 @@ def encrypt():
     data = request.json
     plain_text = data['plain_text']
     key = int(data['key'])
-    encrypted_text = railfence_cipher.rail_fence_encrypt(plain_text,key)
+    encrypted_text = railfence_cipher.railfence_encrypt(plain_text,key)
     return jsonify({'encrypted_text' : encrypted_text})
 
 @app.route('/api/railfence/decrypt',methods = ['POST'])
