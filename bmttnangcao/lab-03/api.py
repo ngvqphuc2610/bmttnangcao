@@ -1,4 +1,4 @@
-from flask import Flask,request, json
+from flask import Flask,request,jsonify
 from cipher.rsa import RSACipher
 from cipher.ecc import ECCCipher
 
@@ -8,13 +8,13 @@ rsa_cipher = RSACipher()
 ecc_cipher = ECCCipher()
 
 @app.route('/api/rsa/generate_keys', methods=['GET'])
-def generate_keys():
-    rsa_cipher.generate_key()
-    return json.jsonify({"message": "Generated Successfully"})
+def rsa_generate_keys():
+    rsa_cipher.generate_keys()
+    return jsonify({'message': 'Generated Successfully'})
 
 @app.route('/api/rsa/encrypt', methods=['POST'])
 def rsa_encrypt():
-    data = request.json()
+    data = request.json
     message = data['message']
     key_type = data['key_type']
     private_key, public_key = rsa_cipher.load_keys()
@@ -26,12 +26,12 @@ def rsa_encrypt():
         return jsonify({'error': 'Invalid key type'})
     encrypted_message = rsa_cipher.encrypt(message, key)
     encrypted_hex = encrypted_message.hex()
-    return json.jsonify({"encrypted_message": encrypted_hex})
+    return jsonify({"encrypted_message": encrypted_hex})
 
 @app.route('/api/rsa/decrypt', methods=['POST'])
 def rsa_decrypt():
-    data = request.json()
-    ciphertext_hex = data['cipher_text']
+    data = request.json
+    ciphertext_hex = data['ciphertext']
     key_type = data['key_type']
     private_key, public_key = rsa_cipher.load_keys()
     if key_type == "public":
@@ -42,51 +42,51 @@ def rsa_decrypt():
         return jsonify({'error': 'Invalid key type'})
     ciphertext = bytes.fromhex(ciphertext_hex)
     decrypted_message = rsa_cipher.decrypt(ciphertext, key)
-    return json.jsonify({"decrypted_message": decrypted_message.decode()})
+    return jsonify({'decrypted_message': decrypted_message})
 
 @app.route('/api/rsa/sign', methods=['POST'])
 def rsa_sign_message():
-    data = request.json()
+    data = request.json
     message = data['message']
     private_key, _ = rsa_cipher.load_keys()
     signature = rsa_cipher.sign(message, private_key)
     signature_hex = signature.hex()
-    return json.jsonify({"signature": signature_hex()})
+    return jsonify({'signature': signature_hex})
 
 @app.route('/api/rsa/verify', methods=['POST'])
 def rsa_verify_signature():
-    data = request.json()
+    data = request.json
     message = data['message']
     signature_hex = data['signature']
     public_key, _ = rsa_cipher.load_keys()
     signature = bytes.fromhex(signature_hex)
     is_verified = rsa_cipher.verify(message, signature, public_key)
-    return json.jsonify({"is_verified": is_verified})
+    return jsonify({'is_verified': is_verified})
 
 # ECC
 @app.route('/api/ecc/generate_keys', methods=['GET'])
 def ecc_generate_keys():
     ecc_cipher.generate_keys()
-    return json.jsonify({"message": "Generated Successfully"})
+    return jsonify({"message": "Generated Successfully"})
 
 @app.route('/api/ecc/sign', methods=['POST'])
 def ecc_sign_message():
-    data = request.json()
+    data = request.json
     message = data['message']
     private_keys, _ = ecc_cipher.load_keys()
     signature = ecc_cipher.sign(message, private_keys)
     signature_hex = signature.hex()
-    return json.jsonify({"signature": signature_hex})
+    return jsonify({'signature': signature_hex})
 
 @app.route('/api/ecc/verify', methods=['POST'])
 def ecc_verify_signature():
-    data = request.json()
+    data = request.json
     message = data['message']
     signature_hex = data['signature']
     public_key, _ = ecc_cipher.load_keys()
     signature = bytes.fromhex(signature_hex)
     is_verified = ecc_cipher.verify(message, signature, public_key)
-    return json.jsonify({"is_verified": is_verified})
+    return jsonify({'is_verified': is_verified})
 
 
 
