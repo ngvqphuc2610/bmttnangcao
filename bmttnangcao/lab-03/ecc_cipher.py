@@ -45,6 +45,7 @@ class MyApp(QMainWindow):
                 print("Error while calling API")
         except requests.exceptions.RequestException as e:
             print("Error: %s"% e.message)
+            
     def call_api_verify(self):
         url = "http://127.0.0.1:5000/api/ecc/verify"
         payload = {
@@ -55,7 +56,7 @@ class MyApp(QMainWindow):
             response = requests.post(url, json=payload)
             if response.status_code == 200:
                 data = response.json()
-                if data['is_verified']:
+                if data["is_verified"]:
                     msg = QMessageBox()
                     msg.setIcon(QMessageBox.Information)
                     msg.setText("Verified Successfully")

@@ -53,14 +53,14 @@ class MyApp(QMainWindow):
     def call_api_decrypt(self):
         url = "http://127.0.0.1:5000/api/rsa/decrypt"
         payload = {
-            "cipher_text" : self.ui.txt_cipher_text.toPlainText(),
+            "ciphertext" : self.ui.txt_cipher_text.toPlainText(),
             "key_type" : "private"
         }
         try:
             response = requests.post(url, json=payload)
             if response.status_code == 200:
                 data = response.json()
-                self.ui.txt_plain_text.setText(data['decrypted_message'])
+                self.ui.txt_plain_text.setText(data["decrypted_message"])
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Information)
                 msg.setText("Decrypted Successfully")
@@ -73,7 +73,7 @@ class MyApp(QMainWindow):
     def call_api_sign(self):
         url = "http://127.0.0.1:5000/api/rsa/sign"
         payload = {
-            "message" : self.ui.txt_plain_text.toPlainText()
+            "message" : self.ui.txt_info.toPlainText()
         }
         try:
             response = requests.post(url, json=payload)
@@ -99,10 +99,17 @@ class MyApp(QMainWindow):
             response = requests.post(url, json=payload)
             if response.status_code == 200:
                 data = response.json()
-                msg = QMessageBox()
-                msg.setIcon(QMessageBox.Information)
-                msg.setText(data['result'])
-                msg.exec_()
+                if(data["is_verified"]):
+                   
+                    msg = QMessageBox()
+                    msg.setIcon(QMessageBox.Information)
+                    msg.setText("Verified successfully")
+                    msg.exec_()
+                else:
+                    msg = QMessageBox()
+                    msg.setIcon(QMessageBox.Information)
+                    msg.setText("Verified fail")
+                    msg.exec_()
             else:
                 print("Error while calling API")
         except requests.exceptions.RequestException as e:
