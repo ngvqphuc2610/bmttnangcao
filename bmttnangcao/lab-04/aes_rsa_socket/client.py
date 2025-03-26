@@ -16,10 +16,11 @@ encrypted_aes_key = client_socket.recv(2048)
 cipher_rsa = PKCS1_OAEP.new(client_key)
 aes_key = cipher_rsa.decrypt(encrypted_aes_key)
 
-def encrypt_message(key,message):
+def encrypt_message(key, message):
     cipher = AES.new(key, AES.MODE_CBC)
     ciphertext = cipher.encrypt(pad(message, AES.block_size))
     return cipher.iv + ciphertext
+
 def decrypt_message(key, encrypted_message):
     iv = encrypted_message[:AES.block_size]
     ciphertext = encrypted_message[AES.block_size:]
@@ -30,15 +31,20 @@ def decrypt_message(key, encrypted_message):
 def receive_message():
     while True:
         encrypted_message = client_socket.recv(1024)
+        if not encrypted_message:
+            break
         decrypted_message = decrypt_message(aes_key, encrypted_message)
         print(f"Received: {decrypted_message}")
-        receive_thread = threading.Thread(target=receive_message)
-        receive_thread.start()
-    while True:
-        message = input("Enter message ('exit' to quit)")
-        encrypt_message = encrypt_message(aes_key, message)
-        client_socket.send(encrypt_message)
-        if message == "exit":
-            break
-    client_socket.close()
-    
+
+receive_thread = threading.Thread(target=receive_message)
+receive_thread.start()
+
+while True:
+    message = input("Enter message ('exit' to quit)")
+    encrypted_message = encrypt_message(aes_key, message.encode())
+    client_socket.send(encrypted_message)
+    if message == "exit":
+        break
+
+client_socket.close()
+receive_thread.join()
